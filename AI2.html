@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Web Game</title>
+    <link rel="stylesheet" href = "css/AI.css">
+</head>
+<body class = "homebg">
+        <a href="index.html">Home</a>
+        <a href="Triathlon.html">About Us</a>
+        <a href="#">AI Web Game</a>
+        </span>
+    
+</body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Word Matching Game</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Word Matching Game</h1>
+  <div id="game-board" class="game-board"></div>
+  <div id="message" class="message"></div>
+  <script>
+    const words = ["Apple", "Banana", "Cat", "Dog", "Egg", "Fish", "Guitar", "Hat", "Ice", "Jug"];
+    let cards = [];
+    let flipped = [];
+    let matchedCount = 0;
+    let failedAttempts = 0;
+    const maxAttempts = 30;
+    const gameBoard = document.getElementById("game-board");
+    const messageDiv = document.getElementById("message");
+
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function createBoard() {
+      matchedCount = 0;
+      failedAttempts = 0;
+      messageDiv.textContent = "";
+      gameBoard.innerHTML = "";
+      flipped = [];
+
+      const fullSet = shuffle([...words, ...words]);
+      cards = fullSet.map((word, index) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.dataset.word = word;
+        card.dataset.index = index;
+        card.addEventListener("click", handleCardClick);
+        gameBoard.appendChild(card);
+        return card;
+      });
+    }
+
+    function handleCardClick(e) {
+      const card = e.currentTarget;
+      if (card.classList.contains("flipped") || card.classList.contains("matched")) return;
+
+      card.classList.add("flipped");
+      card.textContent = card.dataset.word;
+      flipped.push(card);
+
+      if (flipped.length === 2) {
+        const [first, second] = flipped;
+        if (first.dataset.word === second.dataset.word) {
+          first.classList.add("matched");
+          second.classList.add("matched");
+          matchedCount += 2;
+          flipped = [];
+
+          if (matchedCount === 20) {
+            setTimeout(() => {
+              alert("🎉 You won! Starting a new game...");
+              createBoard();
+            }, 500);
+          }
+        } else {
+          failedAttempts++;
+          setTimeout(() => {
+            first.classList.remove("flipped");
+            second.classList.remove("flipped");
+            first.textContent = "";
+            second.textContent = "";
+            flipped = [];
+          }, 800);
+
+          if (failedAttempts >= maxAttempts) {
+            setTimeout(() => {
+              messageDiv.textContent = "😞 Too many tries! Click here to try again.";
+              gameBoard.innerHTML = "";
+              messageDiv.addEventListener("click", createBoard, { once: true });
+            }, 1000);
+          }
+        }
+      }
+    }
+
+    createBoard();
+  </script>
+</body>
+</html>
+
+</html>
